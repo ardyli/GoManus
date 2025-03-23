@@ -1,4 +1,7 @@
 # GoManus 项目
+<p align="center">
+  <img src="logo/logo.jpg" width="200"/>
+</p>
 
 ## 项目简介
 
@@ -31,7 +34,6 @@ GoManus，这个听起来就充满力量的名字，实际上是一个全开源�
 ## 技术栈
 
 - Go 1.21
-- Gin v1.9.1
 - Viper v1.18.2
 - GORM v1.25.7
 - SQLite v1.14.17
