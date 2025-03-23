@@ -2,7 +2,6 @@
 <p align="center">
   <img src="logo/logo.jpg" width="200"/>
 </p>
-
 ## 项目简介
 
 ### GoManus：AI代理系统的革命，让自动化变得如此简单！

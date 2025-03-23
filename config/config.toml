@@ -17,9 +17,9 @@ api_key = "ollama"
 # 设置为true启用工具，false禁用工具
 terminate = true  # 终止工具
 google_search = false  # Google搜索工具
-zhihu_search = true  # 知乎搜索工具
+zhihu_search = false  # 知乎搜索工具
 baidu_baike_search = true # 百度百科搜索工具
-wikipedia_search = true  # 维基百科搜索工具
+wikipedia_search = false  # 维基百科搜索工具
 browser_use = true   # 浏览器使用工具
 file_operator = true  # 文件操作工具
 planning = true  # 任务规划工具

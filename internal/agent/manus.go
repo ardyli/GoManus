@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"fmt"
+	"gomanus/internal/config"
 	"gomanus/internal/llm"
 	"gomanus/internal/schema"
 	"gomanus/internal/tool"
@@ -21,34 +22,36 @@ func NewManus(name string, llm *llm.LLM, tools *tool.ToolCollection) *Manus {
 	toolCallAgent := NewToolCallAgent(name, llm, tools)
 	toolCallAgent.Description = "GoManus代理 - gomanus的主代理"
 
+	// 获取工具配置
+	toolsConfig, err := config.GetToolsConfig()
+	if err != nil {
+		logger.Error("获取工具配置失败: %v", err)
+		toolsConfig = &config.ToolsConfig{} // 使用默认配置
+	}
+
 	// 创建包含工具说明的系统提示
-	systemPrompt := `你是GoManus，一个强大的AI助手，能够使用各种工具帮助用户完成任务。
+	systemPrompt := "你是GoManus，一个强大的AI助手，能够使用各种工具帮助用户完成任务。\n\n你可以使用以下工具：\n\n"
 
-你可以使用以下工具：
+	// 动态添加启用的工具说明
+	var toolDescriptions []string
 
-1. google_search - 执行Google搜索并返回相关链接列表，用于查找网络信息
-   参数: 
-   - query: 搜索查询（必填）
-   - num_results: 返回结果数量（可选，默认10）
-
-2. zhihu_search - 执行知乎搜索并返回相关问题和回答的链接列表
+	if toolsConfig.ZhihuSearch {
+		toolDescriptions = append(toolDescriptions, `zhihu_search - 执行知乎搜索并返回相关问题和回答的链接列表
    参数:
    - query: 搜索查询（必填）
    - num_results: 返回结果数量（可选，默认10）
-   - search_type: 搜索类型（可选，"general"综合、"question"问题、"article"文章，默认"general"）
+   - search_type: 搜索类型（可选，"general"综合、"question"问题、"article"文章，默认"general"）`)
+	}
 
-3. baidu_baike_search - 执行百度百科搜索并返回相关词条的链接和摘要
+	if toolsConfig.BaiduBaikeSearch {
+		toolDescriptions = append(toolDescriptions, `baidu_baike_search - 执行百度百科搜索并返回相关词条的链接和摘要
    参数:
    - query: 搜索查询（必填）
-   - num_results: 返回结果数量（可选，默认5）
+   - num_results: 返回结果数量（可选，默认5）`)
+	}
 
-4. wikipedia_search - 执行维基百科搜索并返回相关条目的链接和摘要
-   参数:
-   - query: 搜索查询（必填）
-   - language: 搜索的语言版本（可选，"zh"中文、"en"英文，默认"zh"）
-   - num_results: 返回结果数量（可选，默认5）
-
-5. file_operator - 对文件进行读取和保存操作，支持txt、md、pdf、png、jpg等格式
+	if toolsConfig.FileOperator {
+		toolDescriptions = append(toolDescriptions, `file_operator - 对文件进行读取和保存操作，支持txt、md、pdf、png、jpg等格式
    参数:
    - operation: 操作类型（必填，"read"表示读取，"write"表示写入）
    - file_path: 文件路径（必填）
@@ -57,21 +60,31 @@ func NewManus(name string, llm *llm.LLM, tools *tool.ToolCollection) *Manus {
    - encoding: 文件编码格式（读取操作可选，默认"utf-8"）
    - max_size: 读取文件的最大大小（读取操作可选，默认10MB）
    
-   注意：当读取png或jpg图像文件时，系统会自动调用视觉模型对图像内容进行分析，并返回详细的文本描述。
+   注意：当读取png或jpg图像文件时，系统会自动调用视觉模型对图像内容进行分析，并返回详细的文本描述。`)
+	}
 
-6. browser_use - 与网页浏览器交互，执行各种操作
+	if toolsConfig.BrowserUse {
+		toolDescriptions = append(toolDescriptions, `browser_use - 与网页浏览器交互，执行各种操作
    参数:
    - action: 要执行的浏览器操作（必填，可选值: "navigate", "get_html", "execute_js", "new_tab", "close_tab"）
    - url: 'navigate'或'new_tab'操作的URL
    - script: 'execute_js'操作的JavaScript代码
-   - tab_id: 操作的标签页ID
+   - tab_id: 操作的标签页ID`)
+	}
 
-7. terminate - 终止当前执行
+	if toolsConfig.Terminate {
+		toolDescriptions = append(toolDescriptions, `terminate - 终止当前执行
    参数:
    - status: 终止状态（必填，可选值: "success", "failure"）
-   - message: 终止消息（可选）
+   - message: 终止消息（可选）`)
+	}
 
-当用户请求需要使用这些工具的任务时，请主动调用适当的工具来完成任务。每个工具都有特定的用途，请根据用户的需求选择最合适的工具。`
+	// 添加工具描述到系统提示
+	for i, desc := range toolDescriptions {
+		systemPrompt += fmt.Sprintf("%d. %s\n\n", i+1, desc)
+	}
+
+	systemPrompt += "当用户请求需要使用这些工具的任务时，请主动调用适当的工具来完成任务。每个工具都有特定的用途，请根据用户的需求选择最合适的工具。"
 
 	return &Manus{
 		ToolCallAgent: toolCallAgent,
