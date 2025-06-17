@@ -28,6 +28,11 @@ func NewToolCallAgent(name string, llm *llm.LLM, tools *tool.ToolCollection) *To
 	}
 }
 
+// Run 重写Run方法以确保使用正确的Step实现
+func (a *ToolCallAgent) Run(ctx context.Context, request string) (string, error) {
+	return a.BaseAgent.RunWithStepper(ctx, request, a)
+}
+
 // Think 思考下一步行动，解析LLM响应中的工具调用
 func (a *ToolCallAgent) Think(ctx context.Context) (bool, error) {
 	// 获取所有消息
@@ -153,6 +158,12 @@ func (a *ToolCallAgent) Act(ctx context.Context) (string, error) {
 			ToolCallID: tc.ID,
 			Content:    resultStr,
 		})
+		
+		// 检查是否是terminate工具，如果是则设置代理状态为完成
+		if tc.Function.Name == "terminate" {
+			logger.Info("检测到terminate工具调用，设置代理状态为完成")
+			a.SetState(StateFinished)
+		}
 		
 		results = append(results, fmt.Sprintf("工具 %s 执行结果: %s", tc.Function.Name, resultStr))
 	}

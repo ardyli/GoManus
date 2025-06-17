@@ -143,14 +143,14 @@ func (l *LLM) AskWithOptions(
 	}
 
 	// 记录请求详情
-	logger.Info("发送LLM请求到: %s", l.BaseURL+"chat/completions")
-	logger.Info("请求模型: %s", l.Model)
-	logger.Info("请求工具数量: %d", len(tools))
-	logger.Info("请求消息数量: %d", len(allMessages))
+	logger.Debug("发送LLM请求到: %s", l.BaseURL+"chat/completions")
+	logger.Debug("请求模型: %s", l.Model)
+	logger.Debug("请求工具数量: %d", len(tools))
+	logger.Debug("请求消息数量: %d", len(allMessages))
 
 	// 记录请求体（但不包含敏感信息）
 	prettyRequest, _ := json.MarshalIndent(requestBody, "", "  ")
-	logger.Info("LLM请求体: %s", string(prettyRequest))
+	logger.Debug("LLM请求体: %s", string(prettyRequest))
 
 	// 创建HTTP请求
 	req, err := http.NewRequestWithContext(ctx, "POST", l.BaseURL+"chat/completions", bytes.NewBuffer(jsonBody))

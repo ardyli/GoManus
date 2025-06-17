@@ -1,6 +1,7 @@
 # Global LLM configuration
 [llm]
-model = "qwq:latest"
+model = "mychen76/qwen3_cline_roocode:14b"
+# model = "qwen3:30b"
 base_url = "http://10.40.0.40:11434/v1/"
 api_key = "ollama"
 max_tokens = 131072
@@ -8,7 +9,7 @@ temperature = 0.0
 
 # Optional configuration for specific LLM models
 [llm_types.vision]
-model = "minicpm-v:latest"
+model = "fanyx/openbmb.MiniCPM4-8B-GGUF-Q8_0:latest"
 base_url = "http://10.40.0.40:11434/v1/"
 api_key = "ollama"
 

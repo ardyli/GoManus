@@ -8,7 +8,6 @@ import (
 	"gomanus/internal/schema"
 	"gomanus/internal/tool"
 	"gomanus/pkg/logger"
-	"strings"
 )
 
 // Manus 是gomanus的主代理，继承自ToolCallAgent
@@ -101,81 +100,14 @@ func (a *Manus) SetSystemPrompt(prompt string) {
 func (a *Manus) Run(ctx context.Context, request string) (string, error) {
 	logger.Info("Manus代理开始运行...")
 
-	// 重置代理状态
-	a.SetState(StateIdle)
-	a.ResetSteps() // 这个方法是从BaseAgent继承的
-
 	// 添加系统提示
 	if a.SystemPrompt != "" {
 		logger.Info("添加系统提示: %s", a.SystemPrompt)
 		a.AddMessage(schema.NewSystemMessage(a.SystemPrompt))
 	}
 
-	// 添加用户消息到记忆中
-	logger.Info("添加用户消息: %s", request)
-	a.AddMessage(schema.NewUserMessage(request))
-
-	// 设置状态为运行中
-	a.SetState(StateRunning)
-	defer a.SetState(StateIdle)
-
-	// 执行步骤直到达到最大步骤数或代理状态变为已完成
-	var results []string
-	// 使用BaseAgent的方法访问和修改步骤计数
-	for a.BaseAgent.GetCurrentStep() < a.BaseAgent.GetMaxSteps() && a.GetState() != StateFinished {
-		a.BaseAgent.CurrentStep++ // 直接访问BaseAgent的字段
-		stepNum := a.BaseAgent.CurrentStep
-
-		logger.Info("执行步骤 %d/%d", stepNum, a.BaseAgent.MaxSteps)
-
-		// 执行单个步骤，这里会调用Manus的Step方法，而不是基类的
-		result, err := a.Step(ctx)
-		if err != nil {
-			a.SetState(StateError)
-			logger.Error("步骤 %d 执行失败: %v", stepNum, err)
-			return "", fmt.Errorf("步骤 %d 执行失败: %w", stepNum, err)
-		}
-
-		// 记录步骤结果
-		stepResult := fmt.Sprintf("步骤 %d: %s", stepNum, result)
-		logger.Info(stepResult)
-		results = append(results, stepResult)
-
-		// 检查是否陷入循环
-		if a.isStuck() {
-			a.handleStuckState()
-		}
-
-		// 添加上下文取消检查
-		select {
-		case <-ctx.Done():
-			logger.Warn("代理执行被上下文取消")
-			results = append(results, "执行被取消")
-			return strings.Join(results, "\n"), ctx.Err()
-		default:
-			// 继续执行
-		}
-	}
-
-	// 检查是否达到最大步骤数
-	if a.BaseAgent.CurrentStep >= a.BaseAgent.MaxSteps {
-		maxStepsMsg := fmt.Sprintf("终止: 达到最大步骤数 (%d)", a.BaseAgent.MaxSteps)
-		logger.Warn(maxStepsMsg)
-		results = append(results, maxStepsMsg)
-	}
-
-	// 返回所有步骤的结果
-	if len(results) == 0 {
-		// 如果没有执行任何步骤，尝试获取最后的助手消息
-		messages := a.Memory.GetMessages()
-		for i := len(messages) - 1; i >= 0; i-- {
-			if messages[i].Role == "assistant" {
-				return messages[i].Content, nil
-			}
-		}
-		return "未执行任何步骤", nil
-	}
-	return strings.Join(results, "\n"), nil
+	// 使用BaseAgent的RunWithStepper方法，传递自身作为stepper
+	return a.BaseAgent.RunWithStepper(ctx, request, a)
 }
 
 // Think 重写Think方法，使用系统提示

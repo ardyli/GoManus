@@ -107,13 +107,17 @@ func (p *PlanningTool) createPlan(params map[string]interface{}) (interface{}, e
 	// 获取计划ID
 	planID, ok := params["plan_id"].(string)
 	if !ok || planID == "" {
-		// 如果未提供计划ID，生成一个基于时间戳的ID
-		planID = fmt.Sprintf("plan_%d", time.Now().Unix())
+		// 如果未提供计划ID，生成一个基于纳秒时间戳的唯一ID
+		planID = fmt.Sprintf("plan_%d", time.Now().UnixNano())
 	}
 
-	// 检查计划ID是否已存在
-	if _, exists := p.plans[planID]; exists {
-		return nil, fmt.Errorf("计划ID '%s' 已存在", planID)
+	// 检查计划ID是否已存在，如果存在则生成新的ID
+	for {
+		if _, exists := p.plans[planID]; !exists {
+			break
+		}
+		// 如果ID已存在，生成新的ID
+		planID = fmt.Sprintf("plan_%d", time.Now().UnixNano())
 	}
 
 	// 获取标题

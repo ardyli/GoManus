@@ -37,8 +37,8 @@ func NewPlanningAgent(name string, llm *llm.LLM, tools *tool.ToolCollection) *Pl
 		logger.Error("添加规划工具失败: %v", err)
 	}
 
-	// 生成基于时间戳的计划ID
-	activePlanID := fmt.Sprintf("plan_%d", time.Now().Unix())
+	// 生成基于纳秒时间戳的唯一计划ID
+	activePlanID := fmt.Sprintf("plan_%d", time.Now().UnixNano())
 
 	return &PlanningAgent{
 		ToolCallAgent:  toolCallAgent,
@@ -72,11 +72,6 @@ func (a *PlanningAgent) GetExecutor(stepType string) *ToolCallAgent {
 func (a *PlanningAgent) Run(ctx context.Context, request string) (string, error) {
 	logger.Info("规划代理开始运行...")
 
-	// 重置代理状态
-	a.SetState(StateIdle)
-	a.ResetSteps()
-	a.CurrentStep = -1
-
 	// 创建初始计划
 	if err := a.CreateInitialPlan(ctx, request); err != nil {
 		return "", fmt.Errorf("创建初始计划失败: %w", err)
@@ -95,13 +90,8 @@ func (a *PlanningAgent) Run(ctx context.Context, request string) (string, error)
 		}
 	}
 
-	// 执行计划
-	result, err := a.ExecutePlan(ctx)
-	if err != nil {
-		return "", fmt.Errorf("执行计划失败: %w", err)
-	}
-
-	return result, nil
+	// 使用BaseAgent的RunWithStepper方法，传递自身作为stepper
+	return a.BaseAgent.RunWithStepper(ctx, request, a)
 }
 
 // CreateInitialPlan 创建初始计划
@@ -319,9 +309,16 @@ func (a *PlanningAgent) ExecuteStep(ctx context.Context, executor *ToolCallAgent
 请使用适当的工具执行此步骤。完成后，提供一个总结说明你完成了什么。
 `, planStatus, a.CurrentStep+1, stepText)
 	
-	// 使用执行器代理执行步骤
+	// 重置执行器的步骤计数
 	executor.ResetSteps()
-	stepResult, err := executor.Run(ctx, stepPrompt)
+	
+	// 添加步骤提示到执行器的记忆中
+	executor.Memory.Clear()
+	executor.AddMessage(schema.NewSystemMessage("你是一个任务执行助手。请使用适当的工具执行给定的步骤。"))
+	executor.AddMessage(schema.NewUserMessage(stepPrompt))
+	
+	// 直接调用执行器的Step方法，避免状态冲突
+	stepResult, err := executor.Step(ctx)
 	if err != nil {
 		return "", fmt.Errorf("执行步骤失败: %w", err)
 	}

@@ -56,21 +56,31 @@ func NewBaseAgent(name string, llmInstance *llm.LLM) *BaseAgent {
 		Description: "基础代理",
 		LLM:         llmInstance,
 		Memory:      schema.NewMemory(),
-		MaxSteps:    30,
+		MaxSteps:    300,
 		CurrentStep: 0,
 		State:       StateIdle,
 	}
 }
 
+// Stepper 定义步骤执行接口
+type Stepper interface {
+	Step(ctx context.Context) (string, error)
+}
+
 // Run 运行代理的主循环
 func (a *BaseAgent) Run(ctx context.Context, request string) (string, error) {
+	return a.RunWithStepper(ctx, request, a)
+}
+
+// RunWithStepper 使用指定的步骤执行器运行代理
+func (a *BaseAgent) RunWithStepper(ctx context.Context, request string, stepper Stepper) (string, error) {
 	// 检查代理状态
 	a.mu.Lock()
 	if a.State != StateIdle {
 		a.mu.Unlock()
 		return "", fmt.Errorf("无法从状态 %s 运行代理", a.State)
 	}
-	
+
 	// 重置步骤计数并设置状态为运行中
 	a.State = StateRunning
 	a.CurrentStep = 0
@@ -87,10 +97,10 @@ func (a *BaseAgent) Run(ctx context.Context, request string) (string, error) {
 	if request != "" {
 		logger.Info("添加用户请求到记忆: %s", request)
 		a.AddMessage(schema.NewUserMessage(request))
-		
+
 		// 立即向AI咨询，生成初始步骤
 		logger.Info("向AI咨询初始步骤...")
-		initialStep, err := a.Step(ctx)
+		initialStep, err := stepper.Step(ctx)
 		if err != nil {
 			a.mu.Lock()
 			a.State = StateError
@@ -98,16 +108,16 @@ func (a *BaseAgent) Run(ctx context.Context, request string) (string, error) {
 			logger.Error("初始步骤生成失败: %v", err)
 			return "", fmt.Errorf("初始步骤生成失败: %w", err)
 		}
-		
+
 		// 记录初始步骤结果
 		a.mu.Lock()
 		a.CurrentStep++
 		stepNum := a.CurrentStep
 		a.mu.Unlock()
-		
+
 		stepResult := fmt.Sprintf("步骤 %d: %s", stepNum, initialStep)
 		logger.Info(stepResult)
-		
+
 		// 如果子类没有实现Step方法，这里可能已经得到了最终结果
 		// 检查是否需要继续执行更多步骤
 		if a.GetState() == StateFinished {
@@ -126,7 +136,7 @@ func (a *BaseAgent) Run(ctx context.Context, request string) (string, error) {
 		logger.Info("执行步骤 %d/%d", stepNum, a.MaxSteps)
 
 		// 执行单个步骤
-		result, err := a.Step(ctx)
+		result, err := stepper.Step(ctx)
 		if err != nil {
 			a.mu.Lock()
 			a.State = StateError
@@ -144,7 +154,7 @@ func (a *BaseAgent) Run(ctx context.Context, request string) (string, error) {
 		if a.isStuck() {
 			a.handleStuckState()
 		}
-		
+
 		// 添加上下文取消检查
 		select {
 		case <-ctx.Done():
@@ -174,7 +184,7 @@ func (a *BaseAgent) Run(ctx context.Context, request string) (string, error) {
 func (a *BaseAgent) Step(ctx context.Context) (string, error) {
 	// 这是一个基础实现，实际应用中应该被子类重写
 	logger.Warn("BaseAgent.Step被调用，但未被子类重写")
-	
+
 	// 检查上下文是否已取消
 	select {
 	case <-ctx.Done():
@@ -182,24 +192,24 @@ func (a *BaseAgent) Step(ctx context.Context) (string, error) {
 	default:
 		// 继续执行
 	}
-	
+
 	// 检查是否有足够的消息可处理
 	messages := a.Memory.GetMessages()
 	if len(messages) == 0 {
 		return "", fmt.Errorf("没有消息可处理")
 	}
-	
+
 	// 检查是否已达到最大步骤数
 	if a.CurrentStep >= a.MaxSteps {
 		return "", fmt.Errorf("已达到最大步骤数 (%d)", a.MaxSteps)
 	}
-	
+
 	// 在实际应用中，子类应该实现具体的逻辑，例如：
 	// 1. 调用LLM进行思考
 	// 2. 执行工具调用
 	// 3. 处理工具调用结果
 	// 4. 生成下一步行动
-	
+
 	// 子类实现应该包含以下步骤：
 	// 1. 获取当前记忆中的所有消息
 	// 2. 构建提示，包括系统提示、历史消息等
@@ -208,7 +218,7 @@ func (a *BaseAgent) Step(ctx context.Context) (string, error) {
 	// 5. 执行行动并处理结果
 	// 6. 将结果添加到记忆中
 	// 7. 返回步骤执行的结果描述
-	
+
 	return "基础步骤实现 - 请在子类中重写此方法", nil
 }
 
@@ -272,9 +282,11 @@ func (a *BaseAgent) isStuck() bool {
 
 // handleStuckState 处理代理陷入循环的情况
 func (a *BaseAgent) handleStuckState() {
-	stuckPrompt := "检测到重复响应。请考虑新的策略，避免重复已尝试过的无效路径。尝试从不同角度思考问题，或使用其他工具。"
-	logger.Warn("代理检测到循环状态，添加提示以改变策略: %s", stuckPrompt)
+	stuckPrompt := "检测到重复响应，任务可能已完成或遇到问题，正在终止执行。"
+	logger.Warn("代理检测到循环状态，强制终止: %s", stuckPrompt)
 	a.AddMessage(schema.NewSystemMessage(stuckPrompt))
+	// 强制设置状态为完成，避免无限循环
+	a.SetState(StateFinished)
 }
 
 // GetMaxSteps 获取代理的最大步骤数

@@ -37,7 +37,7 @@ GoManus，这个听起来就充满力量的名字，实际上是一个全开源�
 - GORM v1.25.7
 - SQLite v1.14.17
 - Sonic v1.9.1
-
+- PTerm   https://pterm.sh/
 ## 项目结构
 
 - `config/`: 配置文件目录

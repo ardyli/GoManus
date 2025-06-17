@@ -24,6 +24,11 @@ func NewReActAgent(name string, llm *llm.LLM) *ReActAgent {
 	}
 }
 
+// Run 重写Run方法以确保使用正确的Step实现
+func (a *ReActAgent) Run(ctx context.Context, request string) (string, error) {
+	return a.BaseAgent.RunWithStepper(ctx, request, a)
+}
+
 // Step 实现代理的单个步骤，包括思考和行动
 func (a *ReActAgent) Step(ctx context.Context) (string, error) {
 	// 思考

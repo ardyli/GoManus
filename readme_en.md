@@ -1,133 +1,448 @@
-# GoManus Project
+# 分级会员商城销售系统需求规格说明书
 
-## Project Introduction
+## 第一章 项目背景
 
-### GoManus: Revolutionizing AI Agent Systems, Making Automation So Simple!
-Imagine an AI agent system that not only understands your every command but also acts like a real assistant to help you complete various complex tasks. This is not a scene from a science fiction novel but GoManus—a Go-based AI agent system that is turning this into reality!
+### 1.1 业务需求
 
-### What is GoManus?
-GoManus, a name that sounds powerful, is actually a fully open-source AI agent system. It not only helps users interact with AI but also enables automated and intelligent task processing. This means that whether it's data analysis, file management, or web searches, GoManus has got you covered.
+#### 功能编号：F-001
+**功能描述：会员等级体系**
+- **输入字段：**
+  - 用户注册信息（姓名、手机号码、身份证号）
+  - 消费记录（消费金额、商品名称、购买时间）
+- **输出字段：**
+  - VIP等级判定结果（VIP/高级VIP/合伙人）
+- **前置条件：** 完成399元指定商品消费
+- **交互方式：** 用户完成消费后，系统自动判断并更新会员等级
+- **颜色要求：** 成功提示为绿色，失败提示为红色
 
-### Why Choose GoManus?
-The reasons to choose GoManus are countless! First, it is completely open-source, which means you can build your own AI assistant based on this project. Second, GoManus does not require a complex environment setup. Forget about those headache-inducing conda and Python environment packages; GoManus only requires you to download a single GoManus.exe file, and with CMD, it can run on your computer!
+#### 功能编号：F-002
+**功能描述：智能分润计算**
+- **动态分配比例示例：**
+  - 直推：5%
+  - 二级：3%
+  - 三级：2%
+- **启用衰减机制：**
+  - 每月超过10万元收益部分系数递减（具体数值由系统根据实际数据动态调整）
+- **交互方式：** 系统实时计算并更新分润比例
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
 
-### How to Use GoManus?
-Using GoManus is simpler than eating a piece of cake. You just need to download the GoManus.exe file and run it. Then, configure the `config/config.toml` file, and your AI assistant is ready. Yes, it's that simple! The powerful features of GoManus are incredible. It supports mainstream LLM models, enabling interaction with AI and automated intelligent task processing. Additionally, it can interact with various tools, including Baidu Baike, Google, Zhihu, Wikipedia, and more. File saving, browser usage, task termination, multi-tool invocation and planning, memory management—GoManus has it all.
+## 第二章 总体描述
 
-## Project Links
+### 2.1 系统边界
+#### 分级限制：
+- 最大允许3级分润（国家法律红线）
+#### 收益构成：
+- 商品销售利润分配占比不低于70%
+- 推荐奖励不超过30%
 
-- Project Link (China): https://gitee.com/therebody/go-manus
+### 2.2 功能性需求
 
-- Project Link: https://github.com/ardyli/GoManus
+#### 功能编号：F-001
+**功能描述：会员等级体系**
+- **页面表单字段名称：**
+  - 用户注册信息（姓名、手机号码、身份证号）
+  - 消费记录（消费金额、商品名称、购买时间）
+- **控件类型：**
+  - 文本框用于输入用户注册信息
+  - 下拉菜单用于选择消费记录中的商品名称
+- **交互方式：** 用户完成消费后，系统自动判断并更新会员等级
 
-## Features
+#### 功能编号：F-002
+**功能描述：智能分润计算**
+- **页面表单字段名称：**
+  - 分润比例（直推、二级、三级）
+  - 收益数据（每月收益总额）
+- **控件类型：**
+  - 文本框用于输入分润比例和收益数据
+- **交互方式：** 系统实时计算并更新分润比例
 
-- Interact with LLMs, supporting mainstream LLM models
-- Interact with AI for automated and intelligent task processing
-- Interact with tools (supports Baidu Baike, Google, Zhihu, Wikipedia, etc.)
-- File saving functionality
-- Browser usage functionality
-- Task termination functionality
-- Multi-tool invocation and planning functionality
-- Memory management functionality
+## 第三章 非功能性需求
 
-## Tech Stack
+### 3.1 功能性需求
 
-- Go 1.21
-- Gin v1.9.1
-- Viper v1.18.2
-- GORM v1.25.7
-- SQLite v1.14.17
-- Sonic v1.9.1
+#### 功能编号：F-002
+**功能描述：智能分润计算**
+- **实时监控金字塔系数≤1.5（团队宽度/深度比值）**
+- **数据安全：金融级加密传输，敏感数据脱敏处理**
+- **性能要求：支持万级并发分润计算**
 
-## Project Structure
+### 3.2 非功能性需求
 
-- `config/`: Configuration file directory
-  - `config.toml`: Configuration file
-- `internal/`: Core implementation
-  - `agent/`: AI agent implementation
-    - `base.go`: Basic functionality
-    - `manus.go`: Main logic
-    - `planning.go`: Planning functionality
-    - `react.go`: Reaction functionality
-    - `toolcall.go`: Tool invocation
-  - `config/`: Configuration management
-    - `config.go`: Configuration loading
-  - `llm/`: LLM interaction
-    - `llm.go`: LLM interface
-  - `middleware/`: Middleware
-    - `refresh.go`: Auto-refresh
-  - `schema/`: Data structures
-    - `agent.go`: Agent-related
-    - `message.go`: Message structure
-    - `toolcall.go`: Tool invocation structure
-  - `tool/`: Tool implementation
-    - `baidu_baike_search.go`: Baidu Baike search
-    - `base.go`: Tool basics
-    - `browser_use.go`: Browser usage
-    - `collection.go`: Tool collection
-    - `file_saver.go`: File saving
-    - `google_search.go`: Google search
-    - `planning.go`: Tool planning
-    - `terminate.go`: Task termination
-    - `wikipedia_search.go`: Wikipedia search
-    - `zhihu_search.go`: Zhihu search
-- `main.go`: Project entry file
-- `go.mod` and `go.sum`: Go module dependency management files
+#### 功能编号：F-002
+**功能描述：智能分润计算**
+- **实时监控金字塔系数≤1.5（团队宽度/深度比值）**
+- **数据安全：金融级加密传输，敏感数据脱敏处理**
+- **性能要求：支持万级并发分润计算**
 
-## Usage Instructions
+## 第四章 合规性设计
 
-### Download Version:
-1. Download the Windows version.
-2. Execute in the command window:
-   Navigate to the directory:
-   ```bash
-   cd GoManus
-   ```
-   Execute in the command window:
-   ```bash
-   ./GoManus.exe
-   ```
+### 4.1 功能编号：F-003
+**功能描述：反传销机制**
+- **设置30天冷静期（可无条件退会）**
+- **收益超过直推5人时启动人工审核**
+- **奖金池储备金制度（预留20%风险保证金）**
 
-### Source Code Version:
-1. Ensure Go 1.21 or higher is installed.
-2. Clone the project locally:
-   ```bash
-   git clone https://gitee.com/therebody/GoManus.git
-   ```
-3. Enter the project directory and install dependencies:
-   ```bash
-   go mod tidy
-   ```
-4. Run the project:
-   ```bash
-   go run main.go
-   ```
+### 4.2 功能编号：F-004
+**功能描述：激励机制设计**
+#### 裂变促进机制：
+- **团队晋级奖：下级晋升触发上级奖励**
+- **超额完成奖：月度目标达成阶梯奖励**
+- **团队平衡奖：横向对比增长率奖励**
 
-## Configuration Instructions
+### 4.3 功能编号：F-005
+**功能描述：防崩盘机制**
+#### 动态提现门槛（依据团队健康度）
+#### 收益衰减曲线（非线性增长模型）
+#### 团队业绩考核（3个月不活跃自动降级）
 
-1. Modify the `config/config.toml` file to configure system parameters.
-2. Configure the LLM API key.
-3. Configure tool-related parameters.
+## 第五章 技术实现
 
-## Contribution Guidelines
+### 5.1 分润算法
+- **采用树形结构存储会员关系**
+- **引入Redis集群缓存实时更新团队结构**
+- **通过分布式事务保证分润数据一致性**
 
-We welcome PRs or Issues to improve the project. Major contribution directions include:
+### 5.2 风控模型
+#### 建立基于机器学习的风险预警系统，实时监测：
+- 异常推荐模式检测
+- 资金流动健康度评估
+- 团队结构合理性分析
 
-- New tool integration
-- UI feature improvements
-- Performance optimization
-- Documentation enhancement
-- Test case writing
+## 第六章 法律合规
 
-Contribution Process:
+### 6.1 关键合规点
+- **不设置入门费（399元为等值商品消费）**
+- **无保底收益承诺**
+- **收益来源明确标注商品利润分配**
+- **提供完整的退出机制**
 
-1. Fork this repository.
-2. Create a feature branch (Feat_xxx) or fix branch (Fix_xxx).
-3. Commit code changes.
-4. Create a Pull Request.
-5. Wait for code review and merging.
+## 第七章 运营保障
 
-## License
+### 7.1 设置7*24小时合规监控团队
+#### 每月生成法律合规报告
+#### 建立消费者权益保障基金（销售额的1%计提）
 
-This project is licensed under the BSD3 License. For details, please refer to the LICENSE file.
+## 第八章 验收标准
+
+### 8.1 通过模拟10万人团队压力测试
+### 8.2 完成律师事务所合规性背书信
+### 8.3 通过金融监管部门备案审查
+
+
+
+
+
+
+# 商城多级会员分润系统设计方案（合规版）
+
+---
+
+## 第一章 核心模型设计
+
+### 1.1 会员体系架构
+
+#### 功能编号：M-001
+**功能描述：会员等级体系**
+- **页面表单字段名称：**
+  - 用户注册信息（姓名、手机号码、身份证号）
+  - 消费记录（消费金额、商品名称、购买时间）
+- **控件类型：**
+  - 文本框用于输入用户注册信息
+  - 下拉菜单用于选择消费记录中的商品名称
+- **交互方式：** 用户完成消费后，系统自动判断并更新会员等级
+- **颜色要求：** 成功提示为绿色，失败提示为红色
+
+#### 功能编号：M-002
+**功能描述：升级规则**
+- **页面表单字段名称：**
+  - 累计团队销售额（输入框）
+- **控件类型：**
+  - 数值输入框用于输入累计团队销售额
+- **交互方式：** 用户完成消费后，系统自动判断并更新会员等级
+- **颜色要求：** 成功提示为绿色，失败提示为红色
+
+#### 功能编号：M-003
+**功能描述：身份绑定**
+- **页面表单字段名称：**
+  - 实名认证信息（姓名、身份证号）
+  - 银行卡信息（银行卡号、开户行）
+- **控件类型：**
+  - 文本框用于输入实名认证信息和银行卡信息
+- **交互方式：** 用户完成注册时，系统自动进行身份验证并绑定银行卡
+- **颜色要求：** 成功提示为绿色，失败提示为红色
+
+---
+
+### 1.2 分润机制模型
+
+#### 功能编号：M-004
+**功能描述：分润分配**
+- **页面表单字段名称：**
+  - 销售额（输入框）
+- **控件类型：**
+  - 数值输入框用于输入销售额
+- **交互方式：** 系统实时计算并更新分润比例
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：M-005
+**功能描述：动态分润算法**
+| 层级 | 基础比例 | 裂变加成条件 | 最高比例 |
+|------|---------|--------------|---------|
+| 直推 | 6%      | 下级月销破5万 | +2%     |
+| 二级 | 3%      | 团队新增10人 | +1%     |  
+| 三级 | 1%      | 培养出黄金会员 | +0.5%   |
+
+---
+
+## 第二章 合规要素实现
+
+### 2.1 法律防火墙设计
+
+#### 功能编号：C-001
+**功能描述：商品价值保障**
+- **页面表单字段名称：**
+  - 商品价格（输入框）
+  - 实物图片上传按钮
+- **控件类型：**
+  - 数值输入框用于输入商品价格
+  - 文件上传控件用于上传实物图片
+- **交互方式：** 用户完成消费后，系统自动验证商品价值并显示实物图片
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：C-002
+**功能描述：层级控制**
+- **页面表单字段名称：**
+  - 团队结构图（图表控件）
+- **控件类型：**
+  - 图表控件用于显示团队结构图
+- **交互方式：** 系统实时更新并展示团队结构图，仅开放3层可见收益
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：C-003
+**功能描述：收益封顶机制**
+- **页面表单字段名称：**
+  - 团队销售额（输入框）
+- **控件类型：**
+  - 数值输入框用于输入团队销售额
+- **交互方式：** 系统实时计算并更新收益分配比例，确保单日收益不超过3%，月度收益阶梯递减
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+---
+
+### 2.2 风险熔断机制
+
+#### 功能编号：C-004
+**功能描述：健康度指标**
+- **页面表单字段名称：**
+  - 团队宽度（输入框）
+  - 团队深度（输入框）
+- **控件类型：**
+  - 数值输入框用于输入团队宽度和深度
+- **交互方式：** 系统实时计算并更新金字塔系数，确保其≤1.5；僵尸会员率≤20%
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：C-005
+**功能描述：自动熔断**
+- **页面表单字段名称：**
+  - 触发阈值（输入框）
+- **控件类型：**
+  - 数值输入框用于输入触发阈值
+- **交互方式：** 系统实时监控并更新健康度指标，当触发阈值时自动冻结新会员注册，收益提现延迟15个工作日
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+---
+
+## 第三章 裂变激励机制
+
+### 3.1 动态分润算法
+
+#### 功能编号：L-001
+**功能描述：动态分润计算**
+- **页面表单字段名称：**
+  - 下级月销（输入框）
+  - 团队新增人数（输入框）
+  - 培养出黄金会员（复选框）
+- **控件类型：**
+  - 数值输入框用于输入下级月销和团队新增人数
+  - 复选框用于选择是否培养出黄金会员
+- **交互方式：** 系统实时计算并更新分润比例，确保裂变加成条件满足时动态调整分润比例
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+### 3.2 特殊激励池
+
+#### 功能编号：L-002
+**功能描述：晋级礼包**
+- **页面表单字段名称：**
+  - 激进会员等级（下拉菜单）
+- **控件类型：**
+  - 下拉菜单用于选择晋级会员等级
+- **交互方式：** 系统根据会员等级自动分配相应奖励，如购物券、团队管理费等
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：L-003
+**功能描述：裂变竞赛**
+- **页面表单字段名称：**
+  - 周冠军（复选框）
+  - 月擂台名次（输入框）
+- **控件类型：**
+  - 复选框用于选择是否为周冠军
+  - 数值输入框用于输入月擂台名次
+- **交互方式：** 系统根据竞赛结果自动分配奖励，如荣誉勋章、额外收益权等
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+---
+
+## 第四章 防崩盘体系
+
+### 4.1 资金流管理
+
+#### 功能编号：D-001
+**功能描述：双账户制度**
+- **页面表单字段名称：**
+  - 消费金额（输入框）
+  - 提现申请按钮
+- **控件类型：**
+  - 数值输入框用于输入消费金额
+  - 按钮用于提交提现申请
+- **交互方式：** 用户完成消费后，系统自动分配资金至消费账户；收益账户T+7可提现（前3月限每月提现1次）
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：D-002
+**功能描述：风险储备金**
+- **页面表单字段名称：**
+  - 订单金额（输入框）
+- **控件类型：**
+  - 数值输入框用于输入订单金额
+- **交互方式：** 系统实时计算并计提风险储备金，确保应急池充足以应对突发性挤兑兑付
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+### 4.2 团队健康管理
+
+#### 功能编号：D-003
+**功能描述：考核维度**
+- **页面表单字段名称：**
+  - 月登录次数（输入框）
+  - 个人月销金额（输入框）
+  - 直推有效会员人数（输入框）
+- **控件类型：**
+  - 数值输入框用于输入各项指标数据
+- **交互方式：** 系统根据考核维度实时更新团队健康度，确保活跃、贡献和培养指标达标
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：D-004
+**功能描述：淘汰机制**
+- **页面表单字段名称：**
+  - 连续不达标月数（输入框）
+- **控件类型：**
+  - 数值输入框用于输入连续不达标月数
+- **交互方式：** 系统根据考核维度实时更新团队健康度，确保活跃、贡献和培养指标达标；连续2个月不达标降级，连续3个月不达标冻结收益
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+---
+
+## 第五章 技术实现方案
+
+### 5.1 核心组件
+
+#### 功能编号：T-001
+**功能描述：关系图谱引擎**
+- **页面表单字段名称：**
+  - 团队结构数据（图表控件）
+- **控件类型：**
+  - 图表控件用于显示团队结构数据
+- **交互方式：** 系统实时更新并展示团队结构数据，支持千万级节点实时关系追溯
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：T-002
+**功能描述：动态计分系统**
+- **页面表单字段名称：**
+  - 团队健康度指标（图表控件）
+- **控件类型：**
+  - 图表控件用于显示团队健康度指标
+- **交互方式：** 系统实时更新并展示团队健康度指标，基于Fork/Join框架的并行计算实现动态计分
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：T-003
+**功能描述：风控决策中心**
+- **页面表单字段名称：**
+  - 风控指标数据（图表控件）
+- **控件类型：**
+  - 图表控件用于显示风控指标数据
+- **交互方式：** 系统实时更新并展示风控指标数据，集成规则引擎+机器学习模型实现智能决策
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+---
+
+## 第六章 法律合规备案
+
+### 6.1 关键合规点
+
+#### 功能编号：F-001
+**功能描述：取得《电子商务经营许可证》**
+- **页面表单字段名称：**
+  - 许可证申请进度（进度条）
+- **控件类型：**
+  - 进度条用于显示许可证申请进度
+- **交互方式：** 系统实时更新并展示许可证申请进度，确保系统符合国家法律法规要求
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：F-002
+**功能描述：律师事务所出具《模式合规意见书》**
+- **页面表单字段名称：**
+  - 意见书下载按钮
+- **控件类型：**
+  - 按钮用于下载意见书
+- **交互方式：** 系统实时更新并展示意见书，确保系统符合国家法律法规要求
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：F-003
+**功能描述：在当地商务局完成《网络分销备案》**
+- **页面表单字段名称：**
+  - 备案进度（进度条）
+- **控件类型：**
+  - 进度条用于显示备案进度
+- **交互方式：** 系统实时更新并展示备案进度，确保系统符合国家法律法规要求
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：F-004
+**功能描述：与银联商务签订《资金存管协议》**
+- **页面表单字段名称：**
+  - 协议下载按钮
+- **控件类型：**
+  - 按钮用于下载协议
+- **交互方式：** 系统实时更新并展示协议，确保系统符合国家法律法规要求
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+---
+
+## 第七章 运营保障
+
+### 7.1 设置7*24小时合规监控团队
+
+#### 功能编号：O-001
+**功能描述：实时监控**
+- **页面表单字段名称：**
+  - 监控数据（图表控件）
+- **控件类型：**
+  - 图表控件用于显示监控数据
+- **交互方式：** 系统实时更新并展示监控数据，确保系统符合国家法律法规要求
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：O-002
+**功能描述：每季度更新合规知识库**
+- **页面表单字段名称：**
+  - 知识库版本号（文本框）
+- **控件类型：**
+  - 文本框用于输入知识库版本号
+- **交互方式：** 系统实时更新并展示知识库，确保系统符合国家法律法规要求
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+
+#### 功能编号：O-003
+**功能描述：设置专职合规官岗位**
+- **页面表单字段名称：**
+  - 合规官姓名（文本框）
+- **控件类型：**
+  - 文本框用于输入合规官姓名
+- **交互方式：** 系统实时更新并展示合规官信息，确保系统符合国家法律法规要求
+- **颜色要求：** 正常状态为蓝色，异常状态为黄色
+文件下载地址为 http://
