@@ -20,6 +20,7 @@ type LLM struct {
 	Model       string
 	BaseURL     string
 	APIKey      string
+	APIType     string // "ollama" 或 "openai"
 	MaxTokens   int
 	Temperature float64
 	Client      *http.Client
@@ -33,16 +34,23 @@ func NewLLM(configName string) (*LLM, error) {
 		return nil, fmt.Errorf("获取LLM配置失败: %w", err)
 	}
 
+	// 设置默认API类型
+	apiType := cfg.APIType
+	if apiType == "" {
+		apiType = "ollama" // 默认使用ollama
+	}
+
 	// 创建HTTP客户端
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
-	logger.Info("创建LLM实例: %s", configName)
+	logger.Info("创建LLM实例: %s, API类型: %s", configName, apiType)
 	return &LLM{
 		ConfigName:  configName,
 		Model:       cfg.Model,
 		BaseURL:     cfg.BaseURL,
 		APIKey:      cfg.APIKey,
+		APIType:     apiType,
 		MaxTokens:   cfg.MaxTokens,
 		Temperature: cfg.Temperature,
 		Client:      client,
@@ -68,7 +76,7 @@ func (l *LLM) AskWithOptions(
 	// 添加系统消息
 	if systemMsgs != nil && len(systemMsgs) > 0 {
 		for _, msg := range systemMsgs {
-			logger.Info("添加系统消息: %s", msg.Content)
+			logger.Debug("添加系统消息: %s", msg.Content)
 			allMessages = append(allMessages, map[string]interface{}{
 				"role":    msg.Role,
 				"content": msg.Content,
@@ -112,29 +120,7 @@ func (l *LLM) AskWithOptions(
 	}
 
 	// 准备请求体
-	requestBody := map[string]interface{}{
-		"model":       l.Model,
-		"messages":    allMessages,
-		"max_tokens":  l.MaxTokens,
-		"temperature": l.Temperature,
-	}
-
-	// 添加工具和工具选择
-	if tools != nil && len(tools) > 0 {
-		requestBody["tools"] = tools
-
-		if toolChoice != nil {
-			if *toolChoice == "none" {
-				requestBody["tool_choice"] = "none"
-			} else if *toolChoice == "auto" {
-				requestBody["tool_choice"] = "auto"
-			} else if *toolChoice == "required" {
-				requestBody["tool_choice"] = map[string]interface{}{
-					"type": "function",
-				}
-			}
-		}
-	}
+	requestBody := l.buildRequestBody(allMessages, tools, toolChoice)
 
 	// 序列化请求体
 	jsonBody, err := json.Marshal(requestBody)
@@ -160,7 +146,11 @@ func (l *LLM) AskWithOptions(
 
 	// 设置请求头
 	req.Header.Set("Content-Type", "application/json")
+
+	// 根据API类型设置认证头
 	if l.APIKey != "" {
+		// 对于Ollama，即使api_key是"ollama"，也可能需要作为Bearer Token发送
+		// 对于OpenAI兼容接口，总是需要发送Bearer Token
 		req.Header.Set("Authorization", "Bearer "+l.APIKey)
 	}
 
@@ -180,8 +170,8 @@ func (l *LLM) AskWithOptions(
 	}
 
 	// 记录原始响应
-	logger.Info("LLM响应状态码: %d", resp.StatusCode)
-	logger.Info("LLM原始响应: %s", string(body))
+	logger.Debug("LLM响应状态码: %d", resp.StatusCode)
+	logger.Debug("LLM原始响应: %s", string(body))
 
 	// 检查响应状态码
 	if resp.StatusCode != http.StatusOK {
@@ -240,4 +230,37 @@ func (l *LLM) AskWithOptions(
 		Content:   content,
 		ToolCalls: toolCalls,
 	}, nil
+}
+
+// buildRequestBody 根据API类型构建请求体
+func (l *LLM) buildRequestBody(messages []map[string]interface{}, tools []map[string]interface{}, toolChoice *string) map[string]interface{} {
+	requestBody := map[string]interface{}{
+		"model":       l.Model,
+		"messages":    messages,
+		"max_tokens":  l.MaxTokens,
+		"temperature": l.Temperature,
+	}
+
+	// OpenAI 和 Ollama 在大多数情况下是兼容的
+	if tools != nil && len(tools) > 0 {
+		requestBody["tools"] = tools
+
+		if toolChoice != nil {
+			switch *toolChoice {
+			case "none", "auto":
+				requestBody["tool_choice"] = *toolChoice
+			case "required":
+				// Ollama 在 required 模式下可能需要不同的格式
+				if l.APIType == "ollama" {
+					requestBody["tool_choice"] = map[string]interface{}{
+						"type": "function",
+					}
+				} else {
+					requestBody["tool_choice"] = "required"
+				}
+			}
+		}
+	}
+
+	return requestBody
 }

@@ -14,6 +14,7 @@ type LLMConfig struct {
 	Model       string  `mapstructure:"model"`
 	BaseURL     string  `mapstructure:"base_url"`
 	APIKey      string  `mapstructure:"api_key"`
+	APIType     string  `mapstructure:"api_type"`     // "ollama" 或 "openai"
 	MaxTokens   int     `mapstructure:"max_tokens"`
 	Temperature float64 `mapstructure:"temperature"`
 }
@@ -28,6 +29,7 @@ type ToolsConfig struct {
 	BrowserUse      bool `mapstructure:"browser_use"`
 	FileOperator    bool `mapstructure:"file_operator"`
 	Planning        bool `mapstructure:"planning"`
+	TerminalExecutor bool `mapstructure:"terminal_executor"`
 }
 
 // Config 表示应用程序的配置

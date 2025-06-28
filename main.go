@@ -20,7 +20,7 @@ func main() {
 	// 设置日志级别
 	logger.SetLevel(logger.LevelInfo)
 	// 显示欢迎信息
-	pterm.DefaultHeader.WithFullWidth().WithBackgroundStyle(pterm.NewStyle(pterm.BgCyan)).WithTextStyle(pterm.NewStyle(pterm.FgBlack)).Println("GoManus AI 助手")
+	pterm.DefaultHeader.WithFullWidth().WithBackgroundStyle(pterm.NewStyle(pterm.BgCyan)).WithTextStyle(pterm.NewStyle(pterm.FgBlack)).Println("GoManus AI 助手 v 0.8.4 (达哥出品)")
 	// 从配置文件加载配置
 	pterm.Info.Println("⚙️  正在加载配置...")
 	cfg, err := config.LoadConfig("./config")
@@ -117,10 +117,19 @@ func main() {
 		}
 	}
 
+	// 添加TerminalExecutor工具
+	if toolsCfg.TerminalExecutor {
+		pterm.Debug.Println("  💻 加载 Terminal Executor 工具")
+		terminalExecutorTool := tool.NewTerminalExecutor()
+		if err := tools.AddTool(terminalExecutorTool); err != nil {
+			logger.Fatal("添加TerminalExecutor工具失败: %v", err)
+		}
+	}
+
 	pterm.Success.Println("✅ 工具模块加载完成")
 
 	// 创建Manus代理
-	pterm.Info.Println("🤖 正在创建 Manus 代理...")
+	pterm.Info.Println("🤖 正在创建 GoManus 代理...")
 	manusAgent := agent.NewManus("Manus", llmInstance, tools)
 	pterm.Success.Println("✅ Manus 代理创建成功")
 
@@ -186,7 +195,9 @@ func main() {
 					input = ""
 				}
 			}()
-			input, _ = pterm.DefaultInteractiveTextInput.WithDefaultText("").WithTextStyle(pterm.NewStyle(pterm.FgCyan)).Show("🤖 请输入您的问题")
+			// 使用自定义的InteractiveTextInput来修复Home键问题
+			textInput := pterm.DefaultInteractiveTextInput.WithDefaultText("").WithTextStyle(pterm.NewStyle(pterm.FgCyan))
+			input, _ = textInput.Show("🤖 请输入您的问题")
 		}()
 		input = strings.TrimSpace(input)
 		if input == "exit" {
@@ -201,8 +212,8 @@ func main() {
 		}
 
 		// 处理用户输入
-		logger.Info("收到用户输入: %s", input)
-		logger.Info("开始处理用户输入...")
+		logger.Debug("收到用户输入: %s", input)
+		logger.Debug("开始处理用户输入...")
 
 		var response string
 		var err error
@@ -278,7 +289,7 @@ func main() {
 		}
 
 		// 输出响应
-		logger.Info("处理完成，返回响应: %s", response)
+		logger.Debug("处理完成，返回响应: %s", response)
 		pterm.DefaultBox.WithTitle("🤖 GoManus 回复").WithTitleTopCenter().WithBoxStyle(pterm.NewStyle(pterm.FgCyan)).Println(response)
 		pterm.Println()
 	}

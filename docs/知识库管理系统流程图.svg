@@ -1,0 +1,72 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- 用户操作 -->
+  <rect x="50" y="50" width="100" height="40" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="100" y="75" text-anchor="middle" font-family="Arial" font-size="11">打开设置</text>
+  
+  <rect x="50" y="110" width="100" height="40" rx="5" fill="#e8f5e8" stroke="#388e3c" stroke-width="2"/>
+  <text x="100" y="135" text-anchor="middle" font-family="Arial" font-size="11">选择目录</text>
+  
+  <!-- 系统处理 -->
+  <rect x="200" y="50" width="100" height="40" rx="5" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="250" y="75" text-anchor="middle" font-family="Arial" font-size="11">目录验证</text>
+  
+  <rect x="200" y="110" width="100" height="40" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="250" y="135" text-anchor="middle" font-family="Arial" font-size="11">文件扫描</text>
+  
+  <!-- 索引处理 -->
+  <rect x="350" y="50" width="100" height="40" rx="5" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+  <text x="400" y="75" text-anchor="middle" font-family="Arial" font-size="11">建立索引</text>
+  
+  <rect x="350" y="110" width="100" height="40" rx="5" fill="#e0f2f1" stroke="#00695c" stroke-width="2"/>
+  <text x="400" y="135" text-anchor="middle" font-family="Arial" font-size="11">内容分析</text>
+  
+  <!-- 知识库管理 -->
+  <rect x="500" y="50" width="100" height="40" rx="5" fill="#fff8e1" stroke="#ff8f00" stroke-width="2"/>
+  <text x="550" y="75" text-anchor="middle" font-family="Arial" font-size="11">知识库更新</text>
+  
+  <rect x="500" y="110" width="100" height="40" rx="5" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+  <text x="550" y="135" text-anchor="middle" font-family="Arial" font-size="11">监控变化</text>
+  
+  <!-- 连接线 -->
+  <line x1="150" y1="70" x2="200" y2="70" stroke="#333" stroke-width="2" marker-end="url(#arrowhead4)"/>
+  <line x1="150" y1="130" x2="200" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrowhead4)"/>
+  
+  <line x1="300" y1="70" x2="350" y2="70" stroke="#333" stroke-width="2" marker-end="url(#arrowhead4)"/>
+  <line x1="300" y1="130" x2="350" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrowhead4)"/>
+  
+  <line x1="450" y1="70" x2="500" y2="70" stroke="#333" stroke-width="2" marker-end="url(#arrowhead4)"/>
+  <line x1="450" y1="130" x2="500" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrowhead4)"/>
+  
+  <!-- 标签 -->
+  <text x="100" y="25" font-family="Arial" font-size="12" fill="#666">用户配置</text>
+  <text x="250" y="25" font-family="Arial" font-size="12" fill="#666">系统验证</text>
+  <text x="400" y="25" font-family="Arial" font-size="12" fill="#666">索引建立</text>
+  <text x="550" y="25" font-family="Arial" font-size="12" fill="#666">知识库管理</text>
+  
+  <!-- 详细流程 -->
+  <rect x="50" y="200" width="80" height="30" rx="3" fill="#e3f2fd" stroke="#1976d2" stroke-width="1"/>
+  <text x="90" y="220" text-anchor="middle" font-family="Arial" font-size="9">添加目录</text>
+  
+  <rect x="150" y="200" width="80" height="30" rx="3" fill="#e8f5e8" stroke="#388e3c" stroke-width="1"/>
+  <text x="190" y="220" text-anchor="middle" font-family="Arial" font-size="9">权限检查</text>
+  
+  <rect x="250" y="200" width="80" height="30" rx="3" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="290" y="220" text-anchor="middle" font-family="Arial" font-size="9">文件类型</text>
+  
+  <rect x="350" y="200" width="80" height="30" rx="3" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1"/>
+  <text x="390" y="220" text-anchor="middle" font-family="Arial" font-size="9">向量化</text>
+  
+  <rect x="450" y="200" width="80" height="30" rx="3" fill="#fce4ec" stroke="#c2185b" stroke-width="1"/>
+  <text x="490" y="220" text-anchor="middle" font-family="Arial" font-size="9">存储索引</text>
+  
+  <line x1="130" y1="215" x2="150" y2="215" stroke="#333" stroke-width="1" marker-end="url(#arrowhead4)"/>
+  <line x1="230" y1="215" x2="250" y2="215" stroke="#333" stroke-width="1" marker-end="url(#arrowhead4)"/>
+  <line x1="330" y1="215" x2="350" y2="215" stroke="#333" stroke-width="1" marker-end="url(#arrowhead4)"/>
+  <line x1="430" y1="215" x2="450" y2="215" stroke="#333" stroke-width="1" marker-end="url(#arrowhead4)"/>
+</svg>
