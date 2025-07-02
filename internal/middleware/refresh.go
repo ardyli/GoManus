@@ -3,7 +3,7 @@ package middleware
 import (
 	"sync"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 var (
@@ -12,27 +12,29 @@ var (
 )
 
 // RefreshMiddleware 处理编辑后的刷新标记
-func RefreshMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func RefreshMiddleware() fiber.Handler {
+	return func(c *fiber.Ctx) error {
 		// 检查当前请求是否设置了刷新标记
-		if value, exists := c.Get("needRefresh"); exists && value.(bool) {
-			mu.Lock()
-			needRefresh = true
-			mu.Unlock()
+		if value := c.Locals("needRefresh"); value != nil {
+			if needRefreshValue, ok := value.(bool); ok && needRefreshValue {
+				mu.Lock()
+				needRefresh = true
+				mu.Unlock()
+			}
 		}
-		c.Next()
+		return c.Next()
 	}
 }
 
 // CheckRefreshMiddleware 检查是否需要刷新数据
-func CheckRefreshMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func CheckRefreshMiddleware() fiber.Handler {
+	return func(c *fiber.Ctx) error {
 		mu.Lock()
 		if needRefresh {
-			c.Header("X-Refresh-Required", "true")
+			c.Set("X-Refresh-Required", "true")
 			needRefresh = false
 		}
 		mu.Unlock()
-		c.Next()
+		return c.Next()
 	}
 }

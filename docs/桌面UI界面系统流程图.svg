@@ -1,0 +1,44 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- 流程节点 -->
+  <rect x="50" y="50" width="100" height="40" rx="5" fill="#e1f5fe" stroke="#01579b" stroke-width="2"/>
+  <text x="100" y="75" text-anchor="middle" font-family="Arial" font-size="12">应用启动</text>
+  
+  <rect x="200" y="50" width="100" height="40" rx="5" fill="#e8f5e8" stroke="#2e7d32" stroke-width="2"/>
+  <text x="250" y="75" text-anchor="middle" font-family="Arial" font-size="12">UI初始化</text>
+  
+  <rect x="350" y="50" width="100" height="40" rx="5" fill="#fff3e0" stroke="#ef6c00" stroke-width="2"/>
+  <text x="400" y="75" text-anchor="middle" font-family="Arial" font-size="12">主窗口显示</text>
+  
+  <rect x="200" y="130" width="100" height="40" rx="5" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+  <text x="250" y="155" text-anchor="middle" font-family="Arial" font-size="12">用户交互</text>
+  
+  <rect x="50" y="210" width="100" height="40" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="100" y="235" text-anchor="middle" font-family="Arial" font-size="12">设置界面</text>
+  
+  <rect x="200" y="210" width="100" height="40" rx="5" fill="#e0f2f1" stroke="#00695c" stroke-width="2"/>
+  <text x="250" y="235" text-anchor="middle" font-family="Arial" font-size="12">聊天对话</text>
+  
+  <rect x="350" y="210" width="100" height="40" rx="5" fill="#fff8e1" stroke="#ff8f00" stroke-width="2"/>
+  <text x="400" y="235" text-anchor="middle" font-family="Arial" font-size="12">主题切换</text>
+  
+  <rect x="200" y="290" width="100" height="40" rx="5" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+  <text x="250" y="315" text-anchor="middle" font-family="Arial" font-size="12">响应处理</text>
+  
+  <!-- 连接线 -->
+  <line x1="150" y1="70" x2="200" y2="70" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="300" y1="70" x2="350" y2="70" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="90" x2="250" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="200" y1="155" x2="150" y2="210" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="250" y1="170" x2="250" y2="210" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="300" y1="155" x2="350" y2="210" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="250" y1="250" x2="250" y2="290" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- 循环箭头 -->
+  <path d="M 300 315 Q 380 340 380 280 Q 380 240 350 230" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+</svg>

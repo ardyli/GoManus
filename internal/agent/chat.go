@@ -73,7 +73,7 @@ func (a *ChatAgent) Run(ctx context.Context, request string) (string, error) {
 		return "", fmt.Errorf("聊天请求失败: %w", err)
 	}
 
-	logger.Info("聊天代理完成，返回响应: %s", response.Content)
+	logger.Debug("聊天代理完成，返回响应: %s", response.Content)
 	return response.Content, nil
 }
 

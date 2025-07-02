@@ -19,7 +19,7 @@ type Manus struct {
 // NewManus 创建新的Manus代理
 func NewManus(name string, llm *llm.LLM, tools *tool.ToolCollection) *Manus {
 	toolCallAgent := NewToolCallAgent(name, llm, tools)
-	toolCallAgent.Description = "GoManus代理 - gomanus的主代理"
+	toolCallAgent.Description = "GoManus AI智能体 - gomanus的主智能体"
 
 	// 获取工具配置
 	toolsConfig, err := config.GetToolsConfig()
@@ -98,7 +98,7 @@ func (a *Manus) SetSystemPrompt(prompt string) {
 
 // Run 重写Run方法，添加系统提示并确保与AI交互
 func (a *Manus) Run(ctx context.Context, request string) (string, error) {
-	logger.Info("Manus代理开始运行...")
+	logger.Info("GoManus代理开始运行...")
 
 	// 添加系统提示
 	if a.SystemPrompt != "" {
@@ -119,7 +119,7 @@ func (a *Manus) Think(ctx context.Context) (bool, error) {
 	}
 
 	// 向LLM发送请求，包括系统提示
-	logger.Info("Manus代理向LLM发送请求...")
+	logger.Info("GoManus代理向LLM发送请求...")
 
 	// 准备系统消息
 	var systemMsgs []schema.Message
@@ -171,7 +171,7 @@ func (a *Manus) ProcessMessage(ctx context.Context, message string) (string, err
 
 // Step 实现Manus代理的单个步骤，重写以确保正确处理AI交互
 func (a *Manus) Step(ctx context.Context) (string, error) {
-	logger.Info("Manus代理执行步骤...")
+	logger.Info("GoManus代理执行步骤...")
 
 	// 检查上下文是否已取消
 	if ctx.Err() != nil {
@@ -182,11 +182,11 @@ func (a *Manus) Step(ctx context.Context) (string, error) {
 	messages := a.Memory.GetMessages()
 	logger.Info("当前消息数量: %d", len(messages))
 	for i, msg := range messages {
-		logger.Info("消息 %d - 角色: %s, 内容: %s", i, msg.Role, msg.Content)
+		logger.Info("消息 %d - 角色: %s, 内容: %s", i+1, msg.Role, msg.Content)
 	}
 
 	// 思考
-	logger.Info("Manus代理正在思考...")
+	logger.Info("GoManus代理正在思考...")
 	shouldAct, err := a.Think(ctx)
 	if err != nil {
 		logger.Error("思考失败: %v", err)
@@ -201,7 +201,7 @@ func (a *Manus) Step(ctx context.Context) (string, error) {
 
 		for i := len(messages) - 1; i >= 0; i-- {
 			if messages[i].Role == "assistant" {
-				logger.Info("Manus代理思考完成，返回最后的助手消息: %s", messages[i].Content)
+				logger.Info("GoManus代理思考完成，返回最后的助手消息: %s", messages[i].Content)
 				return messages[i].Content, nil
 			}
 		}
@@ -210,13 +210,13 @@ func (a *Manus) Step(ctx context.Context) (string, error) {
 	}
 
 	// 行动
-	logger.Info("Manus代理正在行动...")
+	logger.Info("GoManus代理正在行动...")
 	result, err := a.Act(ctx)
 	if err != nil {
 		logger.Error("行动失败: %v", err)
 		return "", fmt.Errorf("行动失败: %w", err)
 	}
 
-	logger.Info("Manus代理步骤完成: %s", result)
+	logger.Info("GoManus代理步骤完成: %s", result)
 	return result, nil
 }

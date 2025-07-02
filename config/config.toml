@@ -1,17 +1,43 @@
 # Global LLM configuration
 [llm]
-model = "mychen76/qwen3_cline_roocode:14b"
-# model = "qwen3:30b"
-base_url = "http://10.40.0.40:11434/v1/"
+# model = "mychen76/qwen3_cline_roocode:14b"
+# base_url = "http://10.40.0.45:11434/v1/"
+model = "qwen3:8b"
+base_url = "http://39.129.90.144:11434/v1/"
+# base_url = "https://api.gptsapi.net"
+# model = "gpt4"
+#model = "deepseek-v3:671b"
+#base_url = "http://10.40.0.100:8081/v1/"
 api_key = "ollama"
+#api_key = "sk-Vlt71066dea23b6b0e979cd31b1592ed5af3d07e289fPm2r"
+api_type = "ollama"  # 支持 "ollama" 或 "openai"
 max_tokens = 131072
 temperature = 0.0
 
 # Optional configuration for specific LLM models
 [llm_types.vision]
 model = "fanyx/openbmb.MiniCPM4-8B-GGUF-Q8_0:latest"
-base_url = "http://10.40.0.40:11434/v1/"
+base_url = "http://10.40.0.45:11434/v1/"
 api_key = "ollama"
+api_type = "ollama"
+
+# OpenAI兼容接口示例配置
+[llm_types.openai_gpt4]
+model = "gpt-4"
+base_url = "https://api.openai.com/v1/"
+api_key = "your-openai-api-key"
+api_type = "openai"
+max_tokens = 4096
+temperature = 0.7
+
+# 其他OpenAI兼容服务示例
+[llm_types.deepseek]
+model = "deepseek-chat"
+base_url = "https://api.deepseek.com/v1/"
+api_key = "your-deepseek-api-key"
+api_type = "openai"
+max_tokens = 8192
+temperature = 0.3
 
 # Tools configuration
 [tools]
@@ -24,3 +50,4 @@ wikipedia_search = false  # 维基百科搜索工具
 browser_use = true   # 浏览器使用工具
 file_operator = true  # 文件操作工具
 planning = true  # 任务规划工具
+terminal_executor = true  # 终端命令执行工具
