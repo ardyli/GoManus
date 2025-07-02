@@ -39,7 +39,7 @@ api_type = "openai"
 max_tokens = 8192
 temperature = 0.3
 
-# Tools configuration
+# Tools configuration 
 [tools]
 # 设置为true启用工具，false禁用工具
 terminate = true  # 终止工具
