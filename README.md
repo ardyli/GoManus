@@ -14,7 +14,7 @@ GoManus，这个听起来就充满力量的名字，实际上是一个全开源�
 使用GoManus，简直比吃蛋糕还要简单。你只需要下载GoManus.exe文件，然后运行它。接下来，配置好  config/config.toml  文件，你的AI助手就准备好了。是的，就是这么简单！GoManus的强大功能GoManus的功能强大到令人难以置信。它支持市面上主流的LLM模型，能够与AI进行交互，实现自动化和智能化的任务处理。此外，它还能与各种工具进行交互，包括百度百科、Google、知乎、维基百科等搜索工具。文件保存、浏览器使用、任务终止、多工具调用与规划、记忆管理，这些功能GoManus一应俱全。
 
 ## 项目地址
-
+ 
 - 项目地址(中国)：https://gitee.com/therebody/go-manus
 
 - 项目地址：https://github.com/ardyli/GoManus
