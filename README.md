@@ -36,10 +36,6 @@ GoManus，这个听起来就充满力量的名字，实际上是一个全开源�
 <p align="center">
   <img src="images/boot.png" width="100%"/>
 </p>
-** 启动界面：**
-<p align="center">
-  <img src="images/boot.png" width="100%"/>
-</p>
 
 ## 技术栈
 
