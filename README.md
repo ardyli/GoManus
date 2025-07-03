@@ -29,6 +29,14 @@ GoManus，这个听起来就充满力量的名字，实际上是一个全开源�
 - 任务终止功能
 - 多工具调用与规划功能
 - 记忆管理功能
+- 命令终端操作，可以能通过shell命令操作windows\linux\mac
+
+## 介绍
+** 启动界面：**
+<p align="center">
+  <img src="images/boot.png" width="100%"/>
+</p>
+
 
 ## 技术栈
 
@@ -72,6 +80,10 @@ GoManus，这个听起来就充满力量的名字，实际上是一个全开源�
     - `zhihu_search.go`: 知乎搜索
 - `main.go`: 项目入口文件
 - `go.mod` 和 `go.sum`: Go 模块依赖管理文件
+  
+## 模型选用说明
+ 建议使用qwen3,本人使用过。deepseek r1 对工具支持有些问题，请暂绕行！
+
 
 ## 使用说明
  下载版：
@@ -81,8 +93,10 @@ GoManus，这个听起来就充满力量的名字，实际上是一个全开源�
    cd GoManus
    命令窗口执行：
    ./GoManus.exe
-
-
+  下载linux版本：
+  chmod +x GoManus
+  命令窗口执行:
+  ./GoManus
 ### 源码版：
 1. 确保已安装 Go 1.21 或更高版本
 2. 克隆项目到本地：
